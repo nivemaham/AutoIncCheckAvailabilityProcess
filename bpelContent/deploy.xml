@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deploy xmlns="http://www.apache.org/ode/schemas/dd/2007/03" xmlns:AlternativeWareHouse="http://www.alternative.com/AlternativeWareHouse/" xmlns:ManufacturingService="http://service.manufacturing.autoinc.com/ManufacturingService/" xmlns:WareHouseService="http://www.example.org/WareHouseService/" xmlns:check.autoinc.com="http://check.autoinc.com">
+  <process name="check.autoinc.com:AutoIncCheckAvailabilityProcess">
+    <active>true</active>
+    <retired>false</retired>
+    <process-events generate="all"/>
+    <provide partnerLink="client">
+      <service name="check.autoinc.com:AutoIncCheckAvailabilityProcessService" port="AutoIncCheckAvailabilityProcessPort"/>
+    </provide>
+    <invoke partnerLink="WarehousePL">
+      <service name="WareHouseService:WareHouseService" port="WareHouseServiceSOAP"/>
+    </invoke>
+    <invoke partnerLink="Alternativewh">
+      <service name="AlternativeWareHouse:AlternativeWareHouse" port="AlternativeWareHouseSOAP"/>
+    </invoke>
+    <invoke partnerLink="ManufacturingFactoryPL">
+      <service name="ManufacturingService:ManufacturingService" port="ManufacturingServiceSOAP"/>
+    </invoke>
+  </process>
+</deploy>

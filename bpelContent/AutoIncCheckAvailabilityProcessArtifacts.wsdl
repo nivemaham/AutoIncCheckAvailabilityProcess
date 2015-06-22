@@ -14,9 +14,6 @@
     <vprop:propertyAlias messageType="tns:AutoIncCheckAvailabilityProcessRequestMessage" part="payload" propertyName="tns:customerid">
     <vprop:query><![CDATA[/tns:customerid]]></vprop:query>
   </vprop:propertyAlias>
-    <vprop:propertyAlias messageType="wsdl:checkAvailabilityResponse" part="parameters" propertyName="tns:customerid">
-    <vprop:query><![CDATA[/customerId]]></vprop:query>
-  </vprop:propertyAlias>
     <vprop:propertyAlias messageType="tns:AutoIncCheckAvailabilityProcessResponseMessage" part="payload" propertyName="tns:customerid">
     <vprop:query><![CDATA[/tns:customerid]]></vprop:query>
   </vprop:propertyAlias>
@@ -31,6 +28,9 @@
   </plnk:partnerLinkType>
     <vprop:propertyAlias messageType="wsdl2:createProductsRequest" part="parameters" propertyName="tns:customerid">
     <vprop:query><![CDATA[/customerid]]></vprop:query>
+  </vprop:propertyAlias>
+    <vprop:propertyAlias messageType="wsdl:checkAvailabilityResponse" part="parameters" propertyName="tns:customerid">
+    <vprop:query><![CDATA[/customerId]]></vprop:query>
   </vprop:propertyAlias>
     <vprop:propertyAlias messageType="wsdl2:createProductsResponse" part="parameters" propertyName="tns:customerid">
     <vprop:query><![CDATA[/customerid]]></vprop:query>
@@ -61,6 +61,14 @@
                     </sequence>
                 </complexType>
             </element>
+            <element name="processFault">
+            	<complexType>
+            		<sequence>
+
+            			<element name="processFault" type="string"></element>
+            		</sequence>
+            	</complexType>
+            </element>
         </schema>
     </types>
 
@@ -82,10 +90,14 @@
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->    
 
     <!-- portType implemented by the AutoIncCheckAvailabilityProcess BPEL process -->
+    <message name="processFault">
+    	<part name="parameters" element="tns:processFault"></part>
+    </message>
     <portType name="AutoIncCheckAvailabilityProcess">
         <operation name="process">
             <input message="tns:AutoIncCheckAvailabilityProcessRequestMessage"/>
             <output message="tns:AutoIncCheckAvailabilityProcessResponseMessage"/>
+            <fault name="fault" message="tns:processFault"></fault>
         </operation>
     </portType>   
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -100,20 +112,30 @@
      BINDING DEFINITION - Defines the message format and protocol details
      for a web service.
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-    <binding name="AutoIncCheckAvailabilityProcessBinding" type="tns:AutoIncCheckAvailabilityProcess">
-    	<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <binding name="AutoIncCheckAvailabilityProcessBinding"
+    	type="tns:AutoIncCheckAvailabilityProcess">
+
+    	<soap:binding style="document"
+    		transport="http://schemas.xmlsoap.org/soap/http" />
     	<operation name="process">
-    		<soap:operation soapAction="http://check.autoinc.com/process"/>
+
+    		<soap:operation
+    			soapAction="http://check.autoinc.com/process" />
     		<input>
-    			<soap:body use="literal"/>
+
+    			<soap:body use="literal" />
     		</input>
     		<output>
-    			<soap:body use="literal"/>
+
+    			<soap:body use="literal" />
     		</output>
+    		<fault name="fault">
+    			<soap:fault use="literal" name="fault" />
+    		</fault>
     	</operation>
     </binding>
 
-<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      SERVICE DEFINITION - A service groups a set of ports into
      a service unit.
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->

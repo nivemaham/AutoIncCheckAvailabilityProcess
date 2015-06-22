@@ -64,15 +64,10 @@
     <bpel:correlationSets>
         <bpel:correlationSet name="availabilityid" properties="tns:customerid"></bpel:correlationSet>
     </bpel:correlationSets>
-    <bpel:sequence name="main">
-        
-        <!-- Receive input from requester. 
+    <bpel:sequence name="main"><!-- Receive input from requester. 
              Note: This maps to operation defined in AutoIncCheckAvailabilityProcess.wsdl 
              -->
-        <bpel:receive name="receiveInput" partnerLink="client"
-                 portType="tns:AutoIncCheckAvailabilityProcess"
-                 operation="process" variable="input"
-                 createInstance="yes">
+        <bpel:receive name="receiveInput" partnerLink="client" portType="tns:AutoIncCheckAvailabilityProcess" operation="process" variable="input" createInstance="yes">
             <bpel:correlations>
                 <bpel:correlation set="availabilityid" initiate="yes"></bpel:correlation>
             </bpel:correlations>
@@ -120,7 +115,46 @@
             <bpel:correlations>
                 <bpel:correlation set="availabilityid" initiate="no" pattern="response"></bpel:correlation>
             </bpel:correlations>
-        </bpel:invoke>
+        <bpel:catch faultName="ns:availabilityFault"><bpel:sequence>
+                    <bpel:assign validate="no" name="Assign">
+                        <bpel:copy>
+                            <bpel:from><bpel:literal><tns:AutoIncCheckAvailabilityProcessResponse xmlns:tns="http://check.autoinc.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <tns:isAvailable>true</tns:isAvailable>
+  <tns:availabilityType>tns:availabilityType</tns:availabilityType>
+  <tns:customerid>tns:customerid</tns:customerid>
+</tns:AutoIncCheckAvailabilityProcessResponse>
+</bpel:literal></bpel:from>
+                            <bpel:to variable="output" part="payload"></bpel:to>
+                        </bpel:copy>
+                        <bpel:copy>
+                            <bpel:from>
+                                <bpel:literal xml:space="preserve">false</bpel:literal>
+                            </bpel:from>
+                            <bpel:to part="payload" variable="output">
+                                <bpel:query queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0"><![CDATA[tns:isAvailable]]></bpel:query>
+                            </bpel:to>
+                        </bpel:copy>
+                        <bpel:copy>
+                            <bpel:from>
+                                <bpel:literal xml:space="preserve">Warehouse not available
+</bpel:literal>
+                            </bpel:from>
+                            <bpel:to part="payload" variable="output">
+                                <bpel:query queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0"><![CDATA[tns:availabilityType]]></bpel:query>
+                            </bpel:to>
+                        </bpel:copy>
+                        <bpel:copy>
+                            <bpel:from part="parameters" variable="WarehousePLRequest">
+                                <bpel:query queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0"><![CDATA[customerId]]></bpel:query>
+                            </bpel:from>
+                            <bpel:to part="payload" variable="output">
+                                <bpel:query queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0"><![CDATA[tns:customerid]]></bpel:query>
+                            </bpel:to>
+                        </bpel:copy>
+                    </bpel:assign>
+                    <bpel:reply name="Reply" partnerLink="client" operation="process" portType="tns:AutoIncCheckAvailabilityProcess" variable="output"></bpel:reply>
+                    <bpel:exit name="Exit"></bpel:exit>
+                </bpel:sequence></bpel:catch></bpel:invoke>
         <bpel:assign validate="no" name="AssignFromWH">
             <bpel:copy>
                 <bpel:from><bpel:literal><tns:AutoIncCheckAvailabilityProcessResponse xmlns:tns="http://check.autoinc.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -157,7 +191,9 @@
             </bpel:copy>
             <bpel:copy>
                 <bpel:from part="parameters" variable="WarehousePLResponse">
-                    <bpel:query queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0"><![CDATA[isAvailable]]></bpel:query>
+                    <bpel:query queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">
+                        <![CDATA[isAvailable]]>
+                    </bpel:query>
                 </bpel:from>
                 <bpel:to variable="availresult"></bpel:to>
             </bpel:copy>
@@ -207,7 +243,47 @@
                         </bpel:copy>
                     </bpel:assign>
                     <bpel:invoke name="InvokeAlternativeWH" partnerLink="Alternativewh" operation="checkAvailability" portType="ns0:AlternativeWareHouse" inputVariable="AlternativewhRequest" outputVariable="AlternativewhResponse">
-                    </bpel:invoke>
+                    <bpel:catch faultName="ns0:fault"><bpel:sequence>
+                                <bpel:assign validate="no" name="Assign1Faults">
+                                    <bpel:copy>
+                                        <bpel:from><bpel:literal><tns:AutoIncCheckAvailabilityProcessResponse xmlns:tns="http://check.autoinc.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <tns:isAvailable>true</tns:isAvailable>
+  <tns:availabilityType>tns:availabilityType</tns:availabilityType>
+  <tns:customerid>tns:customerid</tns:customerid>
+</tns:AutoIncCheckAvailabilityProcessResponse>
+</bpel:literal></bpel:from>
+                                        <bpel:to variable="output" part="payload"></bpel:to>
+                                    </bpel:copy>
+                                    <bpel:copy>
+                                        <bpel:from>
+                                            <bpel:literal xml:space="preserve">false
+</bpel:literal>
+                                        </bpel:from>
+                                        <bpel:to part="payload" variable="output">
+                                            <bpel:query queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0"><![CDATA[tns:isAvailable]]></bpel:query>
+                                        </bpel:to>
+                                    </bpel:copy>
+                                    <bpel:copy>
+                                        <bpel:from>
+                                            <bpel:literal xml:space="preserve">not available
+</bpel:literal>
+                                        </bpel:from>
+                                        <bpel:to part="payload" variable="output">
+                                            <bpel:query queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0"><![CDATA[tns:availabilityType]]></bpel:query>
+                                        </bpel:to>
+                                    </bpel:copy>
+                                    <bpel:copy>
+                                        <bpel:from part="payload" variable="input">
+                                            <bpel:query queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0"><![CDATA[tns:customerid]]></bpel:query>
+                                        </bpel:from>
+                                        <bpel:to part="payload" variable="output">
+                                            <bpel:query queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0"><![CDATA[tns:customerid]]></bpel:query>
+                                        </bpel:to>
+                                    </bpel:copy>
+                                </bpel:assign>
+                                <bpel:reply name="ReplyWithFault" partnerLink="client" operation="process" portType="tns:AutoIncCheckAvailabilityProcess" variable="output"></bpel:reply>
+                                <bpel:exit name="Exit1"></bpel:exit>
+                            </bpel:sequence></bpel:catch></bpel:invoke>
                     <bpel:assign validate="no" name="AssignFromAlternative">
                         <bpel:copy>
                             <bpel:from><bpel:literal><tns:AutoIncCheckAvailabilityProcessResponse xmlns:tns="http://check.autoinc.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -365,6 +441,7 @@
             </bpel:else>
         </bpel:if>
         
+    
     </bpel:sequence>
 </bpel:process>
 

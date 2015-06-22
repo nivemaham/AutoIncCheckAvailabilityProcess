@@ -50,7 +50,7 @@
     </wsdl:input>
       <wsdl:output message="tns:checkAvailabilityResponse">
     </wsdl:output>
-      <wsdl:fault name="fault" message="tns:checkAvailabilityFault">
+      <wsdl:fault name="availabilityFault" message="tns:checkAvailabilityFault">
     </wsdl:fault>
     </wsdl:operation>
   </wsdl:portType>
@@ -64,8 +64,8 @@
       <wsdl:output>
         <soap:body use="literal"/>
       </wsdl:output>
-      <wsdl:fault name="fault">
-        <soap:fault name="fault" use="literal"/>
+      <wsdl:fault name="availabilityFault">
+        <soap:fault name="availabilityFault" use="literal"/>
       </wsdl:fault>
     </wsdl:operation>
   </wsdl:binding>
